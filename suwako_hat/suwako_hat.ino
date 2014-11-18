@@ -2,9 +2,15 @@
 * @copyright (c) 2014, Victor Nagy (galaxyAbstractor)
 * @license BSD - $root/license
 */
+#include <Adafruit_NeoMatrix.h>
+#include <gamma.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_NeoPixel.h>
 
-#include "LedControl.h" //  need the library
-LedControl lc=LedControl(1,13,12,1); 
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(8, 8, 6,
+    NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
+    NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
+    NEO_GRB + NEO_KHZ800);
 
 int eyes[3][8][8] = {
                       {
@@ -38,13 +44,14 @@ int eyes[3][8][8] = {
                         {0, 0, 0, 0, 0, 0, 0, 0}
                       }
                     };
+                    
+uint32_t magenta = matrix.Color(255, 0, 255);
  
 void setup()
 {
-  // the zero refers to the MAX7219 number, it is zero for 1 chip
-  lc.shutdown(0,false);// turn off power saving, enables display
-  lc.setIntensity(0,15);// sets brightness (0~15 possible values)
-  lc.clearDisplay(0);// clear screen
+  matrix.begin();
+  matrix.setBrightness(8); // pls no hurt my eyes while testing ;_;
+  matrix.show(); // Initialize all pixels to 'off'
 }
 
 boolean first_run = true;
@@ -52,11 +59,12 @@ int prev_offset_x = 0;
 int prev_offset_y = 0;
 void draw_eyes(int eye[8][8], int offset_x, int offset_y) {
   if (first_run || (offset_x != prev_offset_x) || offset_y != prev_offset_y) {
-    lc.clearDisplay(0);
+    matrix.clear();
     for (int x = 0; x < 8; x++) {
       for (int y = 0; y < 8; y++) {
         if (eye[x][y] == 1) {
-          lc.setLed(0, x + offset_x, y + offset_y, true);
+          matrix.drawPixel(x + offset_x, y + offset_y, magenta);
+          matrix.show();
         }
       }
     }
@@ -85,7 +93,7 @@ void arrow_eye(int eye[8][8]) {
 
 void loop()
 {
-  int select_eye = 1;
+  int select_eye = 0;
   
   switch (select_eye) {
     case 0:

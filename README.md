@@ -7,7 +7,11 @@ Using an Arduino Uno and 2 [NeoPixel 8x8 LED matrix](http://www.adafruit.com/pro
 different eyes and animations will be projected onto the surface of the sphere (from the inside).
 
 I decided to release the code if it's useful for anyone else and will release guides on how to create
-the hat itself (if I manage to do it). The current code is using a single-color LED matrix with an
-MAX7219 since I do not yet have the NeoPixel, but this will be updated when I got them.
+the hat itself (if I manage to do it). 
+
+As two NeoPixel matrices are being used, following libraries are required:
+
+* [NeoPixel Library](https://learn.adafruit.com/adafruit-neopixel-uberguide/arduino-library)
+* [NeoMatrix and GFX Library](https://learn.adafruit.com/adafruit-neopixel-uberguide/neomatrix-library)
 
 **Disclaimer:** I am not a C programmer, code may or may not follow proper C coding practices
