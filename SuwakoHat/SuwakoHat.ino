@@ -13,16 +13,15 @@
 
 unsigned long prevFrameTime = 0L;
 
-void setup()
-{
+void setup() {
   SuwakoEyes(5, 6);
-  setEye(0);
+  setEyes(1);
   setColor(255, 0, 0);
   Bluetooth();
+  Serial.begin(9600);
 }
 
-void loop()
-{
+void loop() {
   unsigned long t = bluetoothLoop();
 
   if((t - prevFrameTime) >= (1000L)) {

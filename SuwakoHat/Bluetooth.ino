@@ -32,8 +32,10 @@ unsigned long bluetoothLoop() {
   }
   
   if((state == ACI_EVT_CONNECTED) && BTLEserial.available()) {
-    if(BTLEserial.peek() == '#') { // Color commands start with '#'
-      
+    if(BTLEserial.peek() == 'a') { // select both eyes
+      char eye[2];
+      readStr(eye, sizeof(eye));
+      setEyes(eye[1] - '0'); // Took me too long to figure out >.<
     } else { // Not color, must be message string
       msgLen = readStr(msg, sizeof(msg)-1);
       msg[msgLen] = 0;
