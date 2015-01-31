@@ -11,7 +11,7 @@ import android.widget.Button;
 
 public class EyeFragment extends Fragment {
 
-    public static EyeFragment newInstance(int position) {
+    public static EyeFragment newInstance() {
         return new EyeFragment();
     }
 
@@ -24,7 +24,7 @@ public class EyeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_eyes, container, false);
-        Button button1 = (Button) v.findViewById(R.id.button1);
+       /* Button button1 = (Button) v.findViewById(R.id.button1);
         button1.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -53,7 +53,7 @@ public class EyeFragment extends Fragment {
                 Log.d("Suwako", "click");
                 MainActivity.getBluetooth().send("a2");
             }
-        });
+        });*/
         return v;
     }
 }

@@ -15,16 +15,17 @@ unsigned long prevFrameTime = 0L;
 
 void setup() {
   SuwakoEyes(5, 6);
-  setEyes(1);
+  setEyes(0);
+  setRandomEyes(true);
   setColor(255, 0, 0);
+  setColorMode(1);
   Bluetooth();
-  Serial.begin(9600);
 }
 
 void loop() {
   unsigned long t = bluetoothLoop();
 
-  if((t - prevFrameTime) >= (1000L)) {
+  if((t - prevFrameTime) >= (100L)) {
     tick();
     prevFrameTime = millis();
   }

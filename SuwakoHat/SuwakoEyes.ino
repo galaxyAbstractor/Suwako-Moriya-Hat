@@ -30,7 +30,7 @@ uint8_t _eyes[3][8] PROGMEM = {
                           B00000000
                         }
 }; 
-                
+
 Adafruit_NeoMatrix* _leftEye; 
 Adafruit_NeoMatrix* _rightEye; 
 
@@ -39,7 +39,9 @@ int8_t _offsetY = 0;
 uint8_t _leftEyeIndex;
 uint8_t _rightEyeIndex;
 uint8_t _colorMode;
-uint16_t _color;
+uint32_t _color;
+boolean _randomEyes = false;
+boolean _initial = false;
 
 void SuwakoEyes(uint8_t leftEyePin, uint8_t rightEyePin) {
   _leftEye = new Adafruit_NeoMatrix(8, 8, leftEyePin,
@@ -124,16 +126,70 @@ void setOffsetY(int8_t offsetY) {
   _offsetY = offsetY;
 }
 
+/*
+* 0 = static
+* 1 = fade
+*/
 void setColorMode(uint8_t mode) {
   _colorMode = mode;
 }
 
-void tick() {
-  animateLookAround();
+void setRandomEyes(boolean randomEyes) {
+  _randomEyes = randomEyes;
+}
+
+void doRandom() {
+  if ((rand() % 100) >= 95) {
+    uint8_t eye = rand() % 3;
+    
+    setEyes(eye);
+    
+    setOffsetX(0);
+    setOffsetY(0);
+      
+  } else { 
+    if (_leftEyeIndex == 0) {
+      if ((rand() % 100) >= 50) {
+        animateLookAround();
+      }
+    }
+  }
 }
 
 void setColor(uint8_t r, uint8_t g, uint8_t b) {
-  _color = ((uint16_t)(r & 0xF8) << 8) |
-         ((uint16_t)(g & 0xFC) << 3) |
-                    (b         >> 3);
+  _color = _leftEye->Color(r, g, b);
+}
+
+void Wheel(uint8_t WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    setColor(255 - WheelPos * 3, 0, WheelPos * 3);
+  } else if(WheelPos < 170) {
+    WheelPos -= 85;
+    setColor(0, WheelPos * 3, 255 - WheelPos * 3);
+  } else {
+    WheelPos -= 170;
+    setColor(WheelPos * 3, 255 - WheelPos * 3, 0);
+  }
+}
+
+uint8_t _step = 0;
+void doFadeColor() {
+  Wheel(_step);
+  _step += 3;
+  if (_step > 256) _step = 0;
+}
+
+void tick() {
+  if (_randomEyes) {
+    doRandom();
+  }
+  
+  if (_colorMode == 1) {
+    doFadeColor();
+  }
+  
+  drawEye(_leftEye, true, _leftEyeIndex);
+  drawEye(_rightEye, false, _rightEyeIndex);
+ 
 }

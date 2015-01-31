@@ -20,6 +20,6 @@ public class PageAdapter extends FragmentPagerAdapter {
     }
     @Override
     public Fragment getItem(int position) {
-        return EyeFragment.newInstance(position);
+        return EyeFragment.newInstance();
     }
 }
