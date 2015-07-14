@@ -29,7 +29,6 @@ void loop() {
     tick();
     prevFrameTime = millis();
   }
-
 }
 
 

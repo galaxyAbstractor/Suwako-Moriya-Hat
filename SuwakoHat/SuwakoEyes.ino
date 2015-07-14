@@ -1,31 +1,25 @@
-uint8_t _eyes[3][8] PROGMEM = {
+const uint8_t _eyes[3][6] PROGMEM = {
                         {
                           B00000000, // Regular eye
-                          B00000000,
-                          B00011000,
-                          B00111100,
-                          B00111100,
-                          B00011000,
-                          B00000000,
+                          B00001100,
+                          B00011110,
+                          B00011110,
+                          B00001100,
                           B00000000
                         },
                         {
-                          B00000011, // < eye (arrow)
-                          B00001100,
+                          B00001100, // < eye (arrow)
                           B00110000,
                           B11000000,
                           B11000000,
                           B00110000,
-                          B00001100,
-                          B00000011
+                          B00001100
                         },
                         {
                           B00000000, // < shut eye
                           B00000000,
-                          B00000000,
                           B11111111,
                           B11111111,
-                          B00000000,
                           B00000000,
                           B00000000
                         }
@@ -44,12 +38,12 @@ boolean _randomEyes = false;
 boolean _initial = false;
 
 void SuwakoEyes(uint8_t leftEyePin, uint8_t rightEyePin) {
-  _leftEye = new Adafruit_NeoMatrix(8, 8, leftEyePin,
+  _leftEye = new Adafruit_NeoMatrix(6, 6, leftEyePin,
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
     NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
     NEO_GRB + NEO_KHZ800);
     
-  _rightEye = new Adafruit_NeoMatrix(8, 8, rightEyePin,
+  _rightEye = new Adafruit_NeoMatrix(6, 6, rightEyePin,
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
     NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
     NEO_GRB + NEO_KHZ800);
@@ -69,11 +63,11 @@ void clearEyes() {
 
 void drawEye(Adafruit_NeoMatrix* ledMatrix, bool inverted, uint8_t eye) {
   ledMatrix->clear();
-  for (uint8_t y = 0; y < 8; y++) {
-    for (uint8_t x = 0; x < 8; x++) {
+  for (uint8_t y = 0; y < 6; y++) {
+    for (uint8_t x = 0; x < 6; x++) {
       byte buffer = pgm_read_byte(&(_eyes[eye][y]));
       if (inverted) {
-        if ((buffer >> 7-x)&1) {
+        if ((buffer >> 5-x)&1) {
           ledMatrix->drawPixel(y + _offsetY, x + _offsetX, _color);
           ledMatrix->show();
         }
@@ -88,8 +82,8 @@ void drawEye(Adafruit_NeoMatrix* ledMatrix, bool inverted, uint8_t eye) {
 }
 
 void animateLookAround() {
-  int8_t offsetX = -2 + (rand() % 5);
-  int8_t offsetY = -2 + (rand() % 5);
+  int8_t offsetX = -1 + (rand() % 3);
+  int8_t offsetY = -1 + (rand() % 3);
   
   while (_offsetX != offsetX && _offsetY != offsetY) {
     int8_t x = offsetX == _offsetX ? 0 : offsetX < _offsetX ? -1 : 1;
@@ -138,19 +132,23 @@ void setRandomEyes(boolean randomEyes) {
   _randomEyes = randomEyes;
 }
 
+unsigned long nextTime = 0L;
+unsigned long nextLookaroundTime = 0L;
 void doRandom() {
-  if ((rand() % 100) >= 95) {
+  if ((rand() % 100) >= 95 && millis() > nextTime) {
     uint8_t eye = rand() % 3;
     
     setEyes(eye);
     
     setOffsetX(0);
     setOffsetY(0);
-      
+    
+    nextTime = millis() + 60000;
   } else { 
     if (_leftEyeIndex == 0) {
-      if ((rand() % 100) >= 50) {
+      if ((rand() % 100) >= 25 && millis() > nextLookaroundTime) {
         animateLookAround();
+        nextLookaroundTime = millis() + 5000;
       }
     }
   }
@@ -188,6 +186,8 @@ void tick() {
   if (_colorMode == 1) {
     doFadeColor();
   }
+  
+  //animateLookAround();
   
   drawEye(_leftEye, true, _leftEyeIndex);
   drawEye(_rightEye, false, _rightEyeIndex);
