@@ -15,7 +15,7 @@ unsigned long prevFrameTime = 0L;
 
 void setup() {
   SuwakoEyes(5, 6);
-  setEyes(0);
+  setEyes(1);
   setRandomEyes(true);
   setColor(255, 0, 0);
   setColorMode(1);
