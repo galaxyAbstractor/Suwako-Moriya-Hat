@@ -69,16 +69,15 @@ void drawEye(Adafruit_NeoMatrix* ledMatrix, bool inverted, uint8_t eye) {
       if (inverted) {
         if ((buffer >> 5-x)&1) {
           ledMatrix->drawPixel(y + _offsetY, x + _offsetX, _color);
-          ledMatrix->show();
         }
       } else {
         if ((buffer >> x)&1) { 
           ledMatrix->drawPixel((y + _offsetY), (x + _offsetX), _color);
-          ledMatrix->show();
         }
       }
     }
   }
+  ledMatrix->show();
 }
 
 void animateLookAround() {
