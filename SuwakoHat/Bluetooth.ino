@@ -34,8 +34,32 @@ unsigned long bluetoothLoop() {
   if((state == ACI_EVT_CONNECTED) && BTLEserial.available()) {
     if(BTLEserial.peek() == 'a') { // select both eyes
       char eye[2];
+      Serial.println("Eye set!!");
       readStr(eye, sizeof(eye));
       setEyes(eye[1] - '0'); // Took me too long to figure out >.<
+    } else if(BTLEserial.peek() == 'b') { // left eye
+      char eye[2];
+      readStr(eye, sizeof(eye));
+      setLeftEyeIndex(eye[1] - '0'); 
+    } else if(BTLEserial.peek() == 'c') { // right eye
+      char eye[2];
+      readStr(eye, sizeof(eye));
+      setRightEyeIndex(eye[1] - '0');
+    } else if(BTLEserial.peek() == 'd') { // eyeMode
+      char eyeMode[2];
+      readStr(eyeMode, sizeof(eyeMode));
+      
+      // 0 static
+      // 1 random
+      
+      Serial.println("Eye mode set!");
+      if (eyeMode[1] - '0' == 0) {
+        Serial.println("Set to false!");
+        setRandomEyes(false);
+      } else {
+        Serial.println("Set to true!");
+        setRandomEyes(true);
+      }
     } else { // Not color, must be message string
       msgLen = readStr(msg, sizeof(msg)-1);
       msg[msgLen] = 0;

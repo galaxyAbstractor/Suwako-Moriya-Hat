@@ -64,8 +64,8 @@ void clearEyes() {
 void drawEye(Adafruit_NeoMatrix* ledMatrix, bool inverted, uint8_t eye) {
   ledMatrix->clear();
   for (uint8_t y = 0; y < 6; y++) {
+    byte buffer = pgm_read_byte(&(_eyes[eye][y]));
     for (uint8_t x = 0; x < 6; x++) {
-      byte buffer = pgm_read_byte(&(_eyes[eye][y]));
       if (inverted) {
         if ((buffer >> 5-x)&1) {
           ledMatrix->drawPixel(y + _offsetY, x + _offsetX, _color);
@@ -99,15 +99,21 @@ void animateLookAround() {
 }
 
 void setEyes(uint8_t eye) {
+  setOffsetX(0);
+  setOffsetY(0);
   _leftEyeIndex = eye;
   _rightEyeIndex = eye;
 }
 
 void setLeftEyeIndex(uint8_t leftEyeIndex) {
+  setOffsetX(0);
+  setOffsetY(0);
   _leftEyeIndex = leftEyeIndex;
 }
 
 void setRightEyeIndex(uint8_t rightEyeIndex) {
+  setOffsetX(0);
+  setOffsetY(0);
   _rightEyeIndex = rightEyeIndex;
 }
 
@@ -144,7 +150,7 @@ void doRandom() {
     
     nextTime = millis() + 60000;
   } else { 
-    if (_leftEyeIndex == 0) {
+    if (_leftEyeIndex == 0 && _rightEyeIndex == 0) {
       if ((rand() % 100) >= 25 && millis() > nextLookaroundTime) {
         animateLookAround();
         nextLookaroundTime = millis() + 5000;
@@ -186,7 +192,9 @@ void tick() {
     doFadeColor();
   }
   
-  //animateLookAround();
+  if (!_randomEyes && _leftEyeIndex == 0 _rightEyeIndex == 0) {
+    animateLookAround();
+  }
   
   drawEye(_leftEye, true, _leftEyeIndex);
   drawEye(_rightEye, false, _rightEyeIndex);

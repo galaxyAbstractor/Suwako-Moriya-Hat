@@ -14,6 +14,7 @@
 unsigned long prevFrameTime = 0L;
 
 void setup() {
+  Serial.begin(9600);
   SuwakoEyes(5, 6);
   setEyes(1);
   setRandomEyes(true);
