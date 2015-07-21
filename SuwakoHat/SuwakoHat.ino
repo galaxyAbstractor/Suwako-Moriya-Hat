@@ -14,12 +14,12 @@
 unsigned long prevFrameTime = 0L;
 
 void setup() {
-  Serial.begin(9600);
   SuwakoEyes(5, 6);
-  setEyes(1);
+  setEyes(0);
   setRandomEyes(true);
   setColor(255, 0, 0);
-  setColorMode(1);
+  setColorMode(0);
+  setMoveAround(true);
   Bluetooth();
 }
 

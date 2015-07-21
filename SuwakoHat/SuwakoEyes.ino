@@ -35,6 +35,7 @@ uint8_t _rightEyeIndex;
 uint8_t _colorMode;
 uint32_t _color;
 boolean _randomEyes = false;
+boolean _moveAround = false;
 boolean _initial = false;
 
 void SuwakoEyes(uint8_t leftEyePin, uint8_t rightEyePin) {
@@ -49,10 +50,10 @@ void SuwakoEyes(uint8_t leftEyePin, uint8_t rightEyePin) {
     NEO_GRB + NEO_KHZ800);
 
   _leftEye->begin();
-  _leftEye->setBrightness(8); // pls no hurt my eyes while testing ;_;
+  _leftEye->setBrightness(255); // pls no hurt my eyes while testing ;_;
   _leftEye->show();
   _rightEye->begin();
-  _rightEye->setBrightness(8); // pls no hurt my eyes while testing ;_;
+  _rightEye->setBrightness(255); // pls no hurt my eyes while testing ;_;
   _rightEye->show(); 
 }
 
@@ -137,6 +138,12 @@ void setRandomEyes(boolean randomEyes) {
   _randomEyes = randomEyes;
 }
 
+void setMoveAround(boolean moveAround) {
+  setOffsetX(0);
+  setOffsetY(0);
+  _moveAround = moveAround;
+}
+
 unsigned long nextTime = 0L;
 unsigned long nextLookaroundTime = 0L;
 void doRandom() {
@@ -150,7 +157,7 @@ void doRandom() {
     
     nextTime = millis() + 60000;
   } else { 
-    if (_leftEyeIndex == 0 && _rightEyeIndex == 0) {
+    if (_leftEyeIndex == 0 && _rightEyeIndex == 0 && _moveAround) {
       if ((rand() % 100) >= 25 && millis() > nextLookaroundTime) {
         animateLookAround();
         nextLookaroundTime = millis() + 5000;
@@ -162,6 +169,13 @@ void doRandom() {
 void setColor(uint8_t r, uint8_t g, uint8_t b) {
   _color = _leftEye->Color(r, g, b);
 }
+
+void setBrightness(uint8_t brightness) {
+  _leftEye->setBrightness(brightness);
+  _rightEye->setBrightness(brightness);
+}
+
+
 
 void Wheel(uint8_t WheelPos) {
   WheelPos = 255 - WheelPos;
@@ -183,6 +197,24 @@ void doFadeColor() {
   if (_step > 256) _step = 0;
 }
 
+// I'm boring with colors
+uint8_t colors[7][3] = {
+    {255, 0, 0},
+    {0, 255, 0},
+    {0, 0, 255},
+    {255, 255, 0},
+    {0, 255, 255},
+    {255, 0, 255},
+    {255, 255, 255},
+};
+  
+void selectRandomColor() {
+  int index = rand() % 7;
+  
+  setColor(colors[index][0], colors[index][1], colors[index][2]);
+}
+
+unsigned long nextColorTime = 0L;
 void tick() {
   if (_randomEyes) {
     doRandom();
@@ -190,10 +222,18 @@ void tick() {
   
   if (_colorMode == 1) {
     doFadeColor();
+  } else if (_colorMode == 2) {
+    if((rand() % 100) >= 95 && millis() > nextColorTime) {
+      selectRandomColor();
+      nextColorTime = millis() + 60000;
+    }
   }
   
-  if (!_randomEyes && _leftEyeIndex == 0 _rightEyeIndex == 0) {
-    animateLookAround();
+  if (!_randomEyes && _leftEyeIndex == 0 &&_rightEyeIndex == 0 && _moveAround) {
+    if ((rand() % 100) >= 25 && millis() > nextLookaroundTime) {
+      animateLookAround();
+      nextLookaroundTime = millis() + 10000;
+    }
   }
   
   drawEye(_leftEye, true, _leftEyeIndex);

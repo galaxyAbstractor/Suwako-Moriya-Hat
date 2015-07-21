@@ -34,7 +34,6 @@ unsigned long bluetoothLoop() {
   if((state == ACI_EVT_CONNECTED) && BTLEserial.available()) {
     if(BTLEserial.peek() == 'a') { // select both eyes
       char eye[2];
-      Serial.println("Eye set!!");
       readStr(eye, sizeof(eye));
       setEyes(eye[1] - '0'); // Took me too long to figure out >.<
     } else if(BTLEserial.peek() == 'b') { // left eye
@@ -52,13 +51,46 @@ unsigned long bluetoothLoop() {
       // 0 static
       // 1 random
       
-      Serial.println("Eye mode set!");
       if (eyeMode[1] - '0' == 0) {
-        Serial.println("Set to false!");
         setRandomEyes(false);
       } else {
-        Serial.println("Set to true!");
         setRandomEyes(true);
+      }
+    } else if(BTLEserial.peek() == 'e') { // color
+      char color[10];
+      readStr(color, sizeof(color));
+      
+      uint8_t red = ((color[1] - '0') * 100) + ((color[2] - '0') * 10) + (color[3] - '0');
+      uint8_t green = ((color[4] - '0') * 100) + ((color[5] - '0') * 10) + (color[6] - '0');
+      uint8_t blue = ((color[7] - '0') * 100) + ((color[8] - '0') * 10) + (color[9] - '0');
+
+      setColor(red, green, blue);
+    } else if(BTLEserial.peek() == 'f') { // colormode
+      char colorMode[2];
+      readStr(colorMode, sizeof(colorMode));
+      
+      // 0 static
+      // 1 fade
+      // 2 random
+      
+      setColorMode(colorMode[1] - '0');
+    } else if(BTLEserial.peek() == 'g') { // brightness
+      char val[4];
+      readStr(val, sizeof(val));
+      uint8_t brightness = ((val[1] - '0') * 100) + ((val[2] - '0') * 10) + (val[3] - '0');
+      
+      setBrightness(brightness);
+    } else if(BTLEserial.peek() == 'h') { // Do move around
+      char moveAround[2];
+      readStr(moveAround, sizeof(moveAround));
+      
+      // 0 static
+      // 1 random
+      
+      if (moveAround[1] - '0' == 0) {
+        setMoveAround(false);
+      } else {
+        setMoveAround(true);
       }
     } else { // Not color, must be message string
       msgLen = readStr(msg, sizeof(msg)-1);

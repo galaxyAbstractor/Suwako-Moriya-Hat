@@ -20,6 +20,12 @@ public class PageAdapter extends FragmentPagerAdapter {
     }
     @Override
     public Fragment getItem(int position) {
-        return EyeFragment.newInstance();
+        switch (position) {
+            case 0:
+                return EyeFragment.newInstance();
+            case 1:
+                return ColorFragment.newInstance();
+        }
+        return null;
     }
 }
