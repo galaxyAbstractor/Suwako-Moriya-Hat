@@ -1,4 +1,4 @@
-const uint8_t _eyes[3][6] PROGMEM = {
+const uint8_t _eyes[4][6] PROGMEM = {
                         {
                           B00000000, // Regular eye
                           B00001100,
@@ -16,11 +16,19 @@ const uint8_t _eyes[3][6] PROGMEM = {
                           B00000011
                         },
                         {
-                          B00000000, // < shut eye
+                          B00000000, // shut eye
                           B00000000,
                           B11111111,
                           B11111111,
                           B00000000,
+                          B00000000
+                        },
+                        {
+                          B00000000, // Ring eye
+                          B00001100,
+                          B00010010,
+                          B00010010,
+                          B00001100,
                           B00000000
                         }
 }; 
@@ -41,12 +49,12 @@ boolean _initial = false;
 void SuwakoEyes(uint8_t leftEyePin, uint8_t rightEyePin) {
   _leftEye = new Adafruit_NeoMatrix(6, 6, leftEyePin,
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
-    NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
+    NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
     NEO_GRB + NEO_KHZ800);
     
   _rightEye = new Adafruit_NeoMatrix(6, 6, rightEyePin,
-    NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
-    NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
+    NEO_MATRIX_BOTTOM + NEO_MATRIX_RIGHT +
+    NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
     NEO_GRB + NEO_KHZ800);
 
   _leftEye->begin();
@@ -148,7 +156,7 @@ unsigned long nextTime = 0L;
 unsigned long nextLookaroundTime = 0L;
 void doRandom() {
   if ((rand() % 100) >= 95 && millis() > nextTime) {
-    uint8_t eye = rand() % 3;
+    uint8_t eye = rand() % 4;
     
     setEyes(eye);
     
@@ -157,7 +165,7 @@ void doRandom() {
     
     nextTime = millis() + 60000;
   } else { 
-    if (_leftEyeIndex == 0 && _rightEyeIndex == 0 && _moveAround) {
+    if ((_leftEyeIndex == 0 || _leftEyeIndex == 3) && (_rightEyeIndex == 0 || _rightEyeIndex == 3) && _moveAround) {
       if ((rand() % 100) >= 25 && millis() > nextLookaroundTime) {
         animateLookAround();
         nextLookaroundTime = millis() + 5000;
@@ -229,7 +237,7 @@ void tick() {
     }
   }
   
-  if (!_randomEyes && _leftEyeIndex == 0 &&_rightEyeIndex == 0 && _moveAround) {
+  if (!_randomEyes && (_leftEyeIndex == 0 || _leftEyeIndex == 3) && (_rightEyeIndex == 0 || _rightEyeIndex == 3) && _moveAround) {
     if ((rand() % 100) >= 25 && millis() > nextLookaroundTime) {
       animateLookAround();
       nextLookaroundTime = millis() + 10000;

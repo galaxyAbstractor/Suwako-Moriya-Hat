@@ -118,6 +118,18 @@ public class EyeFragment extends Fragment {
                 MainActivity.getBluetooth().send("h1");
             }
         });
+
+        Button button8 = (Button) v.findViewById(R.id.circle);
+        button8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v1) {
+
+                String eyeMode = "a";
+                if (leftEye.isChecked()) eyeMode = "b";
+                else if (rightEye.isChecked()) eyeMode = "c";
+                MainActivity.getBluetooth().send(eyeMode + "3");
+            }
+        });
         return v;
     }
 }
